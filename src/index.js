@@ -1,31 +1,32 @@
 module.exports = function solveSudoku(matrix) {
    let standardSet = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-    let matrix = JSON.parse(JSON.stringify(matrix));
-
+    //let solved = [];
+    let matrixx = JSON.parse(JSON.stringify(matrix));
+    //console.log('исходный ' + matrixx);
+    //console.log('исходный klon ' + matrixx);
 
     function fillSetRow(i) {
         let setRow = [];
         for (let j = 0; j < 9; j++) {
-            if (matrix[i][j] === 0) {
+            if (matrixx[i][j] === 0) {
                 continue;
             }
-            setRow[setRow.length] = matrix[i][j];
+            setRow[setRow.length] = matrixx[i][j];
         }
-      
+        //console.log('столбцы ' + setRow);
         return setRow;
     }
 
     function fillSetCol(j) {
         let setCol = [];
         for (let i = 0; i < 9; i++) {
-            if (matrix[i][j] === 0) {
+            if (matrixx[i][j] === 0) {
                 continue;
             }
-            setCol[setCol.length] = matrix[i][j];
+            setCol[setCol.length] = matrixx[i][j];
         }
 
-       
+        //console.log('колонки ' + setCol);
         return setCol;
     }
 
@@ -35,23 +36,25 @@ module.exports = function solveSudoku(matrix) {
         i = Math.floor(i / 3) * 3;
         for (let l = 0; l < 3; l++) {
             for (let m = 0; m < 3; m++) {
-                if (matrix[i + l][j + m][0]) {
+                if (matrixx[i + l][j + m][0]) {
 
                 }
-                setSection[setSection.length] = matrix[i + l][j + m];
+                setSection[setSection.length] = matrixx[i + l][j + m];
             }
         }
-     
+        //console.log('секция ' + setSection);
         return setSection;
     }
 
     function fillStateMatrix() {
-       
+        //console.log('matrixx in fillstateMatrix' + matrixx);
+
+        //console.log('state matrixx 0 5 ' + matrixx[0][5] + ' is object ' + typeof matrixx[0][5]);
         let stateMatrix = [];
         for (let i = 0; i < 9; i++) {
             stateMatrix[i] = [];
             for (let j = 0; j < 9; j++) {
-                if (matrix[i][j] === 0) {
+                if (matrixx[i][j] === 0) {
                     let set1 = new Set(standardSet),
                         set2 = new Set(fillSetRow(i)),
                         set3 = new Set(fillSetCol(j)),
@@ -61,7 +64,17 @@ module.exports = function solveSudoku(matrix) {
                     let arraySet2 = Array.from(set2);
                     let arraySet3 = Array.from(set3);
                     let arraySet4 = Array.from(set4);
-                  
+                    //console.log('set2 ' + arraySet2);
+                    //console.log('set3 ' + arraySet3);
+                    //console.log('set4  ' + arraySet4);
+                    /* let commonArray = arraySet2.concat(arraySet3, arraySet4);
+                     console.log('common Array ' + commonArray)
+
+                     if (countRepeater(commonArray)!==0){
+                     console.log('repeator Value for i='+i + ' j='+j +' '+ countRepeater(commonArray));
+                     //stateMatrix[i][j] = new Array().push(countRepeater(commonArray));
+                     //continue;
+                     }*/
                     let difference1 = set1.difference(set2);
                     let difference2 = difference1.difference(set3);
                     let difference3 = difference2.difference(set4);
@@ -69,11 +82,21 @@ module.exports = function solveSudoku(matrix) {
                     continue;
 
                 }
-                stateMatrix[i][j] = matrix[i][j];
+                stateMatrix[i][j] = matrixx[i][j];
             }
 
         }
-       
+        //console.log('таблица состояний ' + stateMatrix);
+        //console.log('state matrixx 0 5 ' + stateMatrix[0][5] + ' is object ' + typeof stateMatrix[0][5]);
+
+        //let k = 0;
+        /*for (let u = 0; u < 9; u++) {
+            for (let p = 0; p < 9; p++) {
+                console.log('i '+u+' j '+p);
+                console.log(stateMatrix[u][p]);
+                //console.log(++k);
+            }
+        }*/
 
         return stateMatrix;
     }
@@ -89,27 +112,35 @@ module.exports = function solveSudoku(matrix) {
     };
 
 
-   
+    /*let stateMatrix = fillStateMatrix();
+     let k = 0
+     for (let i = 0; i < 9; i++) {
+     for (let j = 0; j<9; j++){
+     console.log(stateMatrix[i][j]);
+     console.log(++k);
+     }
+     }*/
+
 
     function findOnes() {
         let matrixState = fillStateMatrix();
-      
+        //console.log('таблица состояний ' + matrixState);
         let solvedSells = [];
         let d = 0;
         for (let i = 0; i < 9; i++) {
             for (let j = 0; j < 9; j++) {
                 if ((typeof matrixState[i][j] === 'object') && (matrixState[i][j].length === 1)) {
-                  
+                    //console.log(++d);
                     let solvedCoord = [];
                     solvedCoord.push(i);
                     solvedCoord.push(j);
                     solvedCoord.push(matrixState[i][j][0]);
-               
+                    //console.log('solved sell ' + solvedCoord);
                     solvedSells.push(solvedCoord);
 
                 } else if (matrixState[i][j].length > 1) {
-                    //console.log('matrix state i= '+i +' j= '+j  length ' + matrixState[i][j].length);
-                    //console.log('matrix state i= ' + i + ' j= ' + j + ' ' + matrixState[i][j]);
+                    //console.log('matrixx state i= '+i +' j= '+j  length ' + matrixState[i][j].length);
+                    //console.log('matrixx state i= ' + i + ' j= ' + j + ' ' + matrixState[i][j]);
                     for (let y = 0; y < matrixState[i][j].length; y++) {
 
                         let counterH = 0;
@@ -187,12 +218,12 @@ module.exports = function solveSudoku(matrix) {
 
                 //console.log('i ' + i + ' j ' + j + ' l ' + ' l ');
 
-                matrix[i].splice(j, 1, l);
+                matrixx[i].splice(j, 1, l);
 
-                //console.log('unSolved sell in matrixFirst ' + matrixFirst[i][j]);
-                //console.log('solved sell in matrix ' + matrix[i][j]);
-                //console.log('matrix return  ' + matrix);
-                //console.log('matrix return  ' + typeof matrix[i][j]);
+                //console.log('unSolved sell in matrixx ' + matrixx[i][j]);
+                //console.log('solved sell in matrixx ' + matrixx[i][j]);
+                //console.log('matrixx return  ' + matrixx);
+                //console.log('matrixx return  ' + typeof matrixx[i][j]);
                 //fillStateMatrix();
                 //console.log('fill section i j  ' + fillSection(0, 5));
             }
@@ -201,10 +232,10 @@ module.exports = function solveSudoku(matrix) {
         } else {
             if (isSolvedSudoku()) {
                 //for (let u = 0; u < 9; u++) {
-                //console.log(matrix[u]);
+                //console.log(matrixx[u]);
                 //}
 
-                return matrix;
+                return matrixx;
             } else {
 
                 let stateArrayFull = fillStateMatrix();
@@ -218,26 +249,26 @@ module.exports = function solveSudoku(matrix) {
                         stateArray.push(stateArrayFull[i]);
                     }
                 }
-               // console.log('stateArray '+stateArray);
+                //console.log('stateArray '+stateArray);
 
-                //console.log(matrixFirst + ' matrix First');
-                // console.log(matrix + ' require advanced algorithm');
+                //console.log(matrixx + ' matrixx First');
+                // console.log(matrixx + ' require advanced algorithm');
                 //for (let u = 0; u < 9; u++) {
 
 
-                //console.log(matrix[u]);
+                //console.log(matrixx[u]);
 
                 //console.log(++k);
 
                 // }
 
-                return matrix + ' require advanced algorithm';
+                return matrixx;
             }
         }
     }
 
     function isSolvedSudoku() {
-        let sudoku = JSON.parse(JSON.stringify(matrix));
+        let sudoku = JSON.parse(JSON.stringify(matrixx));
         for (let i = 0; i < 9; i++) {
             let [r, c] = [Math.floor(i / 3) * 3, (i % 3) * 3];
             if (
@@ -246,10 +277,18 @@ module.exports = function solveSudoku(matrix) {
                 (sudoku.slice(r, r + 3).reduce((s, v) => v.slice(c, c + 3).reduce((s, v) => s.add(v), s), new Set()).size != 9)
             ) return false;
         }
-        return matrixFirst.every((row, rowIndex) => {
+        return matrixx.every((row, rowIndex) => {
             return row.every((num, colIndex) => {
                 return num === 0 || sudoku[rowIndex][colIndex] === num;
             });
         });
+    }
+
+//fillSetCol(0);
+//fillSetRow(0);
+//fillSection(5, 5);
+//findOnes();
+    //console.log(solveSudokeIterable());
+    return solveSudokeIterable();
   
 }
